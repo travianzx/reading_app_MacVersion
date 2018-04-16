@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">reading_app</string>
+    <string name="reading_app">Reading app !</string>
+    <string name="title_activity_reading_book_">reading_book_Activity</string>
+</resources>
