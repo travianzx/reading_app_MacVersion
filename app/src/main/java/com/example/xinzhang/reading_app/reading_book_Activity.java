@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+//import static android.content.res.AssetManager.ACCESS_BUFFER;
+
 public class reading_book_Activity extends AppCompatActivity {
 
     private static final String TAG = "com.example.xinzhang.reading_app";
@@ -34,6 +36,7 @@ public class reading_book_Activity extends AppCompatActivity {
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuffer sb = new StringBuffer();
+
         try {
             String line;
             while ((line = reader.readLine()) != null) {
