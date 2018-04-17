@@ -12,11 +12,41 @@ import java.util.ArrayList;
 
 public class books {
 
-    public String title;
-    public StringBuffer myreadingContent;
-    public Bitmap backgroup;
-    public int numberOfchapter;
-    public String author;
-    public String info;
+
+    private int uid;
+    private String name;
+    private String[] chapters;
+
+    public books(int uid, String name) {
+        this.uid = uid;
+        this.name = name;
+    }
+
+    public void setUid(int uid) {
+        this.uid = uid;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setChapters(String[] chapters) {
+        this.chapters = chapters;
+    }
+
+    public int getUid() {
+        return uid;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String[] getChapters() {
+        return chapters;
+    }
+
+
+
 
 }

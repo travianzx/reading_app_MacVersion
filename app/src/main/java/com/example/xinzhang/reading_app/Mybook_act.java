@@ -25,17 +25,13 @@ public class Mybook_act extends AppCompatActivity {
         mListView = (ListView) findViewById(R.id.book_list_view);
         pb = (ProgressBar) findViewById(R.id.progressBarForMybookAct);
         db = new DatabaseHandler_single_book(this);
-
         loadingInfo loading = new loadingInfo();
         loading.execute();
 
-
     }
-
 
     class loadingInfo extends AsyncTask<Void, Void, String[]>
     {
-
 
         @Override
         protected void onPreExecute() {

@@ -51,7 +51,7 @@ public class reading_book_Activity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_reading_book_);
+        setContentView(R.layout.activity_reading_book_ );
         tv = (TextView) findViewById(R.id.textView);
         pg = (ProgressBar) findViewById(R.id.progressBar);
 
@@ -66,7 +66,6 @@ public class reading_book_Activity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
         pg.setVisibility(View.INVISIBLE);
 
 
@@ -74,7 +73,6 @@ public class reading_book_Activity extends AppCompatActivity {
 
     private class DownloadWebPageTask extends AsyncTask<String, Void, String>
     {
-
 
         @Override
         protected String doInBackground(String... strings) {

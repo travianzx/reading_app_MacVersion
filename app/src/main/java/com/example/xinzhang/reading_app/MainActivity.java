@@ -22,9 +22,11 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_INTERNET = 200;
-    Button button_act1;
+    Button button_mybook;
     Button button_act2;
     Button button_act3;
+    Button button_help;
+
     TextView topText;
     reading_book_table readingT;
 
@@ -35,12 +37,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        button_act1 = (Button) findViewById(R.id.button2);
-        button_act1.setOnClickListener( clickButton );
+        button_mybook = (Button) findViewById(R.id.button2);
+        button_mybook.setOnClickListener( clickButton );
 
         db = new DatabaseHandler_single_book(this);
-
         StringBuffer databaseStr = new StringBuffer();
+
 /*        readingT = new reading_book_table(001+Result,"example01",98,"Location");
         db.addContact(readingT);*/
 
@@ -54,14 +56,10 @@ public class MainActivity extends AppCompatActivity {
         }*/
         //db.initReadingBookTable();
 
-
-
-
         List<reading_book_table> contacts = db.getAllContacts();
         for(reading_book_table cn : contacts)
         {
             System.out.println("name: "+cn.get_name());
-
         }
 
         databaseStr = db.showDataBaseinfo();
@@ -69,6 +67,11 @@ public class MainActivity extends AppCompatActivity {
         {
             System.out.println("Found the readingBookTab tablet");
             System.out.println("How many row: " + db.getProfilesCount());
+            if(db.getProfilesCount() < 1)
+            {
+                db.initReadingBookTable();
+                System.out.println("Init readingBookTab table launched");
+            }
         }
     }
 
@@ -79,11 +82,9 @@ public class MainActivity extends AppCompatActivity {
         {
             Intent act2 = new Intent(getApplicationContext(),Mybook_act.class);
             startActivity(act2);
-
         }
 
     };
-
 
     private void startWeather() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
@@ -95,7 +96,6 @@ public class MainActivity extends AppCompatActivity {
             // Permission is missing and must be requested.
             requestInternetPermission();
         }
-
     }
 
 
@@ -111,7 +111,6 @@ public class MainActivity extends AppCompatActivity {
                 // Permission has been granted. Start camera preview Activity.
                 Toast.makeText(MainActivity.this, "INTERNET access permission was granted", Toast.LENGTH_SHORT).show();
                 //startCamera();
-
 
             } else {
                 // Permission request was denied.
@@ -141,13 +140,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         System.out.println("OnPause exec....");
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         System.out.println("OnResume exec....");
-
     }
 }

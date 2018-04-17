@@ -30,7 +30,6 @@ public class DatabaseHandler_single_book extends SQLiteOpenHelper {
     private static final String KEY_numberOfChapters = "numberOfChapters";
     private static final String KEY_fileLocation = "fileLocation";
 
-
     @Override
     public void onCreate(SQLiteDatabase db) {
 
@@ -76,7 +75,6 @@ public class DatabaseHandler_single_book extends SQLiteOpenHelper {
                 contactList.add(rt);
             } while (cursor.moveToNext());
         }
-
         // return contact list
         db.close();
         return contactList;
@@ -85,24 +83,32 @@ public class DatabaseHandler_single_book extends SQLiteOpenHelper {
 
     public void initReadingBookTable()
     {
+        //init ludingji book
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_ID, 9998);
-        values.put(KEY_NAME, "忍见红颜堕火窟_空余碧血葬香魂"); // Contact Name
-        values.put(KEY_numberOfChapters, 100);
+        values.put(KEY_ID, 100011);
+        values.put(KEY_NAME, "鹿鼎记"); // Contact Name
+        values.put(KEY_numberOfChapters, 50);
+        values.put(KEY_fileLocation, "local");
+
+        // Inserting Row
+        db.insert(TABLE_CONTACTS, null, values);
+
+        // init shujianenchoulu
+        values.put(KEY_ID, 100012);
+        values.put(KEY_NAME, "书剑恩仇录"); // Contact Name
+        values.put(KEY_numberOfChapters, 20);
         values.put(KEY_fileLocation, "local");
 
         // Inserting Row
         db.insert(TABLE_CONTACTS, null, values);
         db.close(); // Closing database connection
-
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Drop older table if existed
         //db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS);
-
         // Create tables again
         //onCreate(db);
         //Log.d("onUpgrade table exec..."," never updated table");
@@ -131,9 +137,7 @@ public class DatabaseHandler_single_book extends SQLiteOpenHelper {
             }
         }
         db.close();
-
         return str;
-
     }
 
     public long getProfilesCount()
@@ -153,6 +157,25 @@ public class DatabaseHandler_single_book extends SQLiteOpenHelper {
 
         Cursor c = db.rawQuery("SELECT name FROM readingBookTab", null);
 
+        int i = 0;
+        if (c.moveToFirst()) {
+            do {
+                str[i] = c.getString(0);
+                i++;
+            } while (c.moveToNext());
+        }
+
+        db.close();
+        return str;
+    }
+
+    public String[] showBookInfo()
+    {
+        String[] str = new String[(int)getProfilesCount()];
+        // be careful this database connection will be close if move behind connection-init
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM readingBookTab", null);
         int i = 0;
         if (c.moveToFirst()) {
             do {
