@@ -18,7 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
+import com.example.xinzhang.reading_app.books;
 //import static android.content.res.AssetManager.ACCESS_BUFFER;
 
 public class reading_book_Activity extends AppCompatActivity {
@@ -26,6 +26,7 @@ public class reading_book_Activity extends AppCompatActivity {
     private static final String TAG = "com.example.xinzhang.reading_app";
     TextView tv;
     ProgressBar pg;
+    books book;
 
     private void loadText() throws IOException {
 
@@ -54,10 +55,12 @@ public class reading_book_Activity extends AppCompatActivity {
         setContentView(R.layout.activity_reading_book_ );
         tv = (TextView) findViewById(R.id.textView);
         pg = (ProgressBar) findViewById(R.id.progressBar);
-
         Intent intent = getIntent();
+
+
+        //System.out.println(intent.getExtras().getString("bookname"));
         String message = intent.getStringExtra(Mybook_act.EXTRA_MESSAGE);
-        tv.setText(message);
+
 
         // AsyncTask
         try {
@@ -71,11 +74,12 @@ public class reading_book_Activity extends AppCompatActivity {
 
     }
 
-    private class DownloadWebPageTask extends AsyncTask<String, Void, String>
+    private class getbookAsyTask extends AsyncTask<String, Void, String>
     {
 
         @Override
         protected String doInBackground(String... strings) {
+            pg.setVisibility(View.VISIBLE);
             return null;
         }
     }

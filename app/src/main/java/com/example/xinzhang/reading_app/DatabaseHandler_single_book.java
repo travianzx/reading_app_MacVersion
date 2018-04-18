@@ -89,7 +89,7 @@ public class DatabaseHandler_single_book extends SQLiteOpenHelper {
         values.put(KEY_ID, 100011);
         values.put(KEY_NAME, "鹿鼎记"); // Contact Name
         values.put(KEY_numberOfChapters, 50);
-        values.put(KEY_fileLocation, "local");
+        values.put(KEY_fileLocation, "ludingji");
 
         // Inserting Row
         db.insert(TABLE_CONTACTS, null, values);
@@ -98,7 +98,7 @@ public class DatabaseHandler_single_book extends SQLiteOpenHelper {
         values.put(KEY_ID, 100012);
         values.put(KEY_NAME, "书剑恩仇录"); // Contact Name
         values.put(KEY_numberOfChapters, 20);
-        values.put(KEY_fileLocation, "local");
+        values.put(KEY_fileLocation, "shujianenchoulu");
 
         // Inserting Row
         db.insert(TABLE_CONTACTS, null, values);
@@ -169,23 +169,20 @@ public class DatabaseHandler_single_book extends SQLiteOpenHelper {
         return str;
     }
 
-    public String[] showBookInfo()
+    public String showBookInfo(String sname)
     {
-        String[] str = new String[(int)getProfilesCount()];
         // be careful this database connection will be close if move behind connection-init
-
+        String result = null;
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor c = db.rawQuery("SELECT * FROM readingBookTab", null);
-        int i = 0;
+        Cursor c = db.rawQuery("SELECT * FROM readingBookTab where name = " + sname, null);
         if (c.moveToFirst()) {
             do {
-                str[i] = c.getString(0);
-                i++;
+                result = c.getString(0);
             } while (c.moveToNext());
         }
 
         db.close();
-        return str;
+        return result;
     }
 
 

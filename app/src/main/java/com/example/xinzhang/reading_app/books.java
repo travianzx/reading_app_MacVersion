@@ -14,12 +14,12 @@ public class books {
 
 
     private int uid;
-    private String name;
+    private String bookname;
     private String[] chapters;
 
     public books(int uid, String name) {
         this.uid = uid;
-        this.name = name;
+        this.bookname = name;
     }
 
     public void setUid(int uid) {
@@ -27,7 +27,7 @@ public class books {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.bookname = name;
     }
 
     public void setChapters(String[] chapters) {
@@ -39,7 +39,7 @@ public class books {
     }
 
     public String getName() {
-        return name;
+        return bookname;
     }
 
     public String[] getChapters() {

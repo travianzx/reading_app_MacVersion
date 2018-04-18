@@ -13,7 +13,7 @@ import android.widget.ProgressBar;
 public class Mybook_act extends AppCompatActivity {
 
     private ListView mListView;
-    public final static String EXTRA_MESSAGE = "Message from MainActivity";
+    public final static String EXTRA_MESSAGE = "bookname";
     ProgressBar pb;
     public DatabaseHandler_single_book db;
     String[] values;
