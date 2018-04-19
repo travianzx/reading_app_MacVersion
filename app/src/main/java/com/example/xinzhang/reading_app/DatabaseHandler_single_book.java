@@ -174,7 +174,7 @@ public class DatabaseHandler_single_book extends SQLiteOpenHelper {
         // be careful this database connection will be close if move behind connection-init
         String result = null;
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor c = db.rawQuery("SELECT * FROM readingBookTab where name = " + sname, null);
+        Cursor c = db.rawQuery("SELECT fileLocation FROM readingBookTab where name = '" + sname +"'", null);
         if (c.moveToFirst()) {
             do {
                 result = c.getString(0);
