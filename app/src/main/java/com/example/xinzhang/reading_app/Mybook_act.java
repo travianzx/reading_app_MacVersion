@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
@@ -17,17 +18,45 @@ public class Mybook_act extends AppCompatActivity {
     ProgressBar pb;
     public DatabaseHandler_single_book db;
     String[] values;
+    Button backbutton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mybook_act);
         mListView = (ListView) findViewById(R.id.book_list_view);
+        backbutton = (Button)findViewById(R.id.button5);
         pb = (ProgressBar) findViewById(R.id.progressBarForMybookAct);
+        backbutton.setOnClickListener(backClickevent);
         db = new DatabaseHandler_single_book(this);
         loadingInfo loading = new loadingInfo();
         loading.execute();
+    }
 
+    private View.OnClickListener backClickevent = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(i);
+        }
+    };
+
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if(hasFocus)
+        {
+            this.getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    |   View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    |   View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    |   View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    |   View.SYSTEM_UI_FLAG_FULLSCREEN
+                    |   View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            );
+        }
     }
 
     class loadingInfo extends AsyncTask<Void, Void, String[]>

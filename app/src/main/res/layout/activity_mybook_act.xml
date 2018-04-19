@@ -25,11 +25,12 @@ tools:context=".Mybook_act">
 
     <Button
         android:id="@+id/button5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="80dp"
+        android:layout_height="60dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:text="Button" />
+        android:layout_centerHorizontal="true"
+        android:text="Back"
+        tools:textColor="@android:color/background_dark" />
 
 
 </RelativeLayout>
