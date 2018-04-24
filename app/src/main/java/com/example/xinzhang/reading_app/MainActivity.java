@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
@@ -17,18 +18,23 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_INTERNET = 200;
+    private static final int REQUEST_INTERNALSTORAGE = 300;
+    private static final int REQUEST_WIFISTATUS = 300;
+    private File enduserFiledir;
+    private String FILEPATH;
+
     Button button_mybook;
     Button button_act2;
     Button button_act3;
     Button button_help;
 
     TextView topText;
-    reading_book_table readingT;
 
     DatabaseHandler_single_book db;
 
@@ -39,15 +45,12 @@ public class MainActivity extends AppCompatActivity {
 
         button_mybook = (Button) findViewById(R.id.button2);
         button_mybook.setOnClickListener( clickButton );
-
+        startWeather();
+        inti_readingAppForInternalStorage();
         db = new DatabaseHandler_single_book(this);
         StringBuffer databaseStr = new StringBuffer();
 
-/*        readingT = new reading_book_table(001+Result,"example01",98,"Location");
-        db.addContact(readingT);*/
-
-
-/*        List<reading_book_table> contacts = db.getAllContacts();
+/*       List<reading_book_table> contacts = db.getAllContacts();
         for (reading_book_table cn : contacts) {
             String log = "Id: " + cn.get_id() + " ,Name: " + cn.get_name() + " ,numberOfchapter: " + cn.getNumberOfChapters() + ", location: "+cn.getFileLocation();
             // Writing Contacts to log
@@ -86,18 +89,88 @@ public class MainActivity extends AppCompatActivity {
 
     };
 
+    // check user permission include :Internet,
     private void startWeather() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.INTERNET)
                 == PackageManager.PERMISSION_GRANTED) {
             // Permission is already available, start camera preview
-            Toast.makeText(MainActivity.this, "startCamera", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MainActivity.this, "start", Toast.LENGTH_SHORT).show();
 
         } else {
             // Permission is missing and must be requested.
             requestInternetPermission();
         }
+
     }
 
+    private boolean inti_readingAppForInternalStorage()
+    {
+        // 1. check internal storasge usage make sure it is enough for all books which will take more than 50 MB .
+        // if smaller than 10 MB, app stop.
+        // 2. check config file exsited or not make one if not here, also check whether inti-books stored or not.
+        // 3.
+
+        startWeather();
+        enduserFiledir = this.getFilesDir();
+        System.out.println("End user file :" + enduserFiledir.getAbsolutePath());
+        if(enduserFiledir == null)
+        {
+            System.out.println("enduserFiledir is null");
+            this.onStop();
+        }
+        FILEPATH = enduserFiledir.getAbsolutePath();
+        String filelist[] = enduserFiledir.list();
+        System.out.println("Total space size :" + enduserFiledir.getTotalSpace()/8/1024/1024);
+        System.out.println("Total Usablespace size :" + enduserFiledir.getUsableSpace()/8/1024/1024);
+
+        //create config file or edit it
+        if(enduserFiledir.getUsableSpace()/8/1024/1024 < 10)
+        {
+            Toast.makeText(MainActivity.this,"Low internal storage",Toast.LENGTH_SHORT).show();
+            this.onStop();
+        }else
+        {
+            File configFile = new File (FILEPATH + "appUserConfig.ini");
+            if(configFile.isFile())
+            {
+                System.out.println("the config exsited");
+                if(configFile.canRead() && configFile.canWrite())
+                {
+                    System.out.println("Config file is readable and writable");
+                    if(new File(FILEPATH + "/books" + "ludingji").isDirectory() && new File(FILEPATH + "/books" + "shujianenchoulu").isDirectory())
+                    {
+                        System.out.println("inti 2 books found ");
+                    }else
+                    {
+                        try {
+                            new File(FILEPATH+"/books").createNewFile();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                    if(new File(FILEPATH+"/books").exists())
+                    { System.out.println("Books folder created")  ;}
+
+                    return true;
+                }else
+                {
+                    System.out.println("Error cannot access config file");
+                }
+            }else
+            {
+                System.out.println("the config missing");
+                try {
+                        configFile.createNewFile();
+
+                        return true;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return false;
+    }
 
     //because some the deveices run Android 6 or even higher version,
     //Check For Permissions need to be implemented at run time.
@@ -105,6 +178,21 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
         // BEGIN_INCLUDE(onRequestPermissionsResult)
+        if (requestCode == REQUEST_INTERNALSTORAGE) {
+            // Request for camera permission.
+            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission has been granted. Start camera preview Activity.
+                Toast.makeText(MainActivity.this, "internal storage access permission was granted", Toast.LENGTH_SHORT).show();
+                //startCamera();
+
+            } else {
+                // Permission request was denied.
+                Toast.makeText(MainActivity.this, "Internal storage permission was denied, app installation  or Application quit", Toast.LENGTH_SHORT).show();
+                super.onStop();
+            }
+
+
+        }
         if (requestCode == REQUEST_INTERNET) {
             // Request for camera permission.
             if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -120,6 +208,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         }
+
         // END_INCLUDE(onRequestPermissionsResult)
 
     }
@@ -131,6 +220,18 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.INTERNET}, REQUEST_INTERNET);
+            }
+        });
+        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.INTERNET}, REQUEST_INTERNET);
+    }
+
+    private void requestWIFIStatusPermission() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("This permission is important to access to Network status.")
+                .setTitle("Important permission required");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_WIFI_STATE}, REQUEST_WIFISTATUS);
             }
         });
         ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.INTERNET}, REQUEST_INTERNET);
