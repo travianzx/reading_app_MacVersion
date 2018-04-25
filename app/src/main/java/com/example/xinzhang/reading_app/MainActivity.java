@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
@@ -123,15 +124,15 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("Total space size :" + enduserFiledir.getTotalSpace()/8/1024/1024);
         System.out.println("Total Usablespace size :" + enduserFiledir.getUsableSpace()/8/1024/1024);
 
-        //create config file or edit it
+
         if(enduserFiledir.getUsableSpace()/8/1024/1024 < 10)
         {
             Toast.makeText(MainActivity.this,"Low internal storage",Toast.LENGTH_SHORT).show();
             this.onStop();
         }else
-        {
+        {   //create config file or edit it
             File configFile = new File (FILEPATH + "appUserConfig.ini");
-            if(configFile.isFile())
+            if(configFile.exists())
             {
                 System.out.println("the config exsited");
                 if(configFile.canRead() && configFile.canWrite())
@@ -139,18 +140,19 @@ public class MainActivity extends AppCompatActivity {
                     System.out.println("Config file is readable and writable");
                     if(new File(FILEPATH + "/books" + "ludingji").isDirectory() && new File(FILEPATH + "/books" + "shujianenchoulu").isDirectory())
                     {
-                        System.out.println("inti 2 books found ");
+                        System.out.println("inti books folder found ");
                     }else
                     {
-                        try {
-                            new File(FILEPATH+"/books").createNewFile();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        new File(FILEPATH+"/books").mkdir();
+                        System.out.println("Books folder creating");
+                        AssetManager assetManager = getAssets();
+                        //create 2 folder for ludingji , shujianenchoulu
+                        new File(FILEPATH+"/books"+"ludingji").mkdir();
 
+                        new File(FILEPATH+"/books"+"shujianenchoulu").mkdir();
                     }
                     if(new File(FILEPATH+"/books").exists())
-                    { System.out.println("Books folder created")  ;}
+                    { System.out.println("Books folder created");     }
 
                     return true;
                 }else
@@ -162,8 +164,8 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("the config missing");
                 try {
                         configFile.createNewFile();
-
-                        return true;
+                    System.out.println("then the config file created by method inti_readingAppForInternalStorage");
+                    return true;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
