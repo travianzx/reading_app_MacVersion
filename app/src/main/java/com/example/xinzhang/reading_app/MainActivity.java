@@ -20,14 +20,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_INTERNET = 200;
     private static final int REQUEST_INTERNALSTORAGE = 300;
     private static final int REQUEST_WIFISTATUS = 300;
-    private File enduserFiledir;
+
     private String FILEPATH;
 
     Button button_mybook;
@@ -47,7 +50,11 @@ public class MainActivity extends AppCompatActivity {
         button_mybook = (Button) findViewById(R.id.button2);
         button_mybook.setOnClickListener( clickButton );
         startWeather();
+
+        //InputStream in_text = getAssets().open("shujianenchoulu" + "/" + "shujianenchoulu_1.txt");
+
         inti_readingAppForInternalStorage();
+
         db = new DatabaseHandler_single_book(this);
         StringBuffer databaseStr = new StringBuffer();
 
@@ -85,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v)
         {
             Intent act2 = new Intent(getApplicationContext(),Mybook_act.class);
+            act2.putExtra("url_book",FILEPATH);
             startActivity(act2);
         }
 
@@ -104,26 +112,25 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private boolean inti_readingAppForInternalStorage()
-    {
+    private boolean inti_readingAppForInternalStorage() {
         // 1. check internal storasge usage make sure it is enough for all books which will take more than 50 MB .
         // if smaller than 10 MB, app stop.
         // 2. check config file exsited or not make one if not here, also check whether inti-books stored or not.
         // 3.
 
         startWeather();
-        enduserFiledir = this.getFilesDir();
+        File enduserFiledir = this.getFilesDir();
         System.out.println("End user file :" + enduserFiledir.getAbsolutePath());
         if(enduserFiledir == null)
         {
-            System.out.println("enduserFiledir is null");
-            this.onStop();
+            System.out.println("enduserFiledir is null" + "ERROR ~~ ");
+            //this.onStop();
         }
+
         FILEPATH = enduserFiledir.getAbsolutePath();
-        String filelist[] = enduserFiledir.list();
+        //String filelist[] = enduserFiledir.list();
         System.out.println("Total space size :" + enduserFiledir.getTotalSpace()/8/1024/1024);
         System.out.println("Total Usablespace size :" + enduserFiledir.getUsableSpace()/8/1024/1024);
-
 
         if(enduserFiledir.getUsableSpace()/8/1024/1024 < 10)
         {
@@ -131,10 +138,23 @@ public class MainActivity extends AppCompatActivity {
             this.onStop();
         }else
         {   //create config file or edit it
+            ///data/user/0/com.example.xinzhang.reading_app/files/ludingji/ludingji_1.txt
             File configFile = new File (FILEPATH + "appUserConfig.ini");
             if(configFile.exists())
+            {   //beware that this If-else condition does not check init-book folders and content.
+                System.out.println("the config exsited, init finshed");
+
+                return true;
+            }else
             {
-                System.out.println("the config exsited");
+                System.out.println("the config missing");
+                try {
+                        configFile.createNewFile();
+                        System.out.println(", then the config file created by method inti_readingAppForInternalStorage");
+
+                } catch (IOException e) {
+                        e.printStackTrace();
+                }
                 if(configFile.canRead() && configFile.canWrite())
                 {
                     System.out.println("Config file is readable and writable");
@@ -146,28 +166,21 @@ public class MainActivity extends AppCompatActivity {
                         new File(FILEPATH+"/books").mkdir();
                         System.out.println("Books folder creating");
                         AssetManager assetManager = getAssets();
-                        //create 2 folder for ludingji , shujianenchoulu
-                        new File(FILEPATH+"/books"+"ludingji").mkdir();
+                        //create 2 folder for ludingji , shujianenchoulu if those two not existed
+                        if(new File(FILEPATH+"/books"+"/ludingji").mkdir() && new File(FILEPATH+"/books"+"/shujianenchoulu").mkdir())
+                        {
+                            try {
+                                init_createTwoBooks(FILEPATH+"/books"+"/ludingji",FILEPATH+"/books"+"/shujianenchoulu");
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
 
-                        new File(FILEPATH+"/books"+"shujianenchoulu").mkdir();
                     }
                     if(new File(FILEPATH+"/books").exists())
-                    { System.out.println("Books folder created");     }
+                    { System.out.println("Books folder created, ");     }
 
                     return true;
-                }else
-                {
-                    System.out.println("Error cannot access config file");
-                }
-            }else
-            {
-                System.out.println("the config missing");
-                try {
-                        configFile.createNewFile();
-                    System.out.println("then the config file created by method inti_readingAppForInternalStorage");
-                    return true;
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
             }
         }
@@ -193,7 +206,6 @@ public class MainActivity extends AppCompatActivity {
                 super.onStop();
             }
 
-
         }
         if (requestCode == REQUEST_INTERNET) {
             // Request for camera permission.
@@ -207,7 +219,6 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "INTERNET access permission was denied", Toast.LENGTH_SHORT).show();
 
             }
-
 
         }
 
@@ -237,6 +248,60 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.INTERNET}, REQUEST_INTERNET);
+    }
+
+    private void init_createTwoBooks(String url_ludingji,String url_shujianenchoulu) throws IOException
+    {
+        String [] booklist_lu = getAssets().list("ludingji");
+        String [] booklist_shu = getAssets().list("shujianenchoulu");
+        for(String lu : booklist_lu)
+        {
+            InputStream in = null;
+            OutputStream out = null;
+            try {
+                in = getAssets().open("ludingji/"+lu);
+                File outFile = new File(url_ludingji, lu);
+                System.out.println("ludingji Path:" + outFile.toURI().getPath());
+
+                out = new FileOutputStream(outFile);
+                copyFile(in, out);
+                in.close();
+                in = null;
+                out.flush();
+                out.close();
+                out = null;
+            } catch(IOException e) {
+                Log.e("tag", "Failed to copy asset file: " + lu, e);
+            }
+        }
+        for(String shu : booklist_shu)
+        {
+            InputStream in2 = null;
+            OutputStream out2 = null;
+            try {
+                in2 = getAssets().open("shujianenchoulu/"+shu);
+                File outFile = new File(url_shujianenchoulu, shu);
+                System.out.println("shujianenchoulu Path:" + outFile.toURI().getPath());
+                out2 = new FileOutputStream(outFile);
+
+                copyFile(in2, out2);
+                in2.close();
+                in2 = null;
+                out2.flush();
+                out2.close();
+                out2 = null;
+            } catch(IOException e) {
+                Log.e("tag", "Failed to copy asset file: " + shu, e);
+            }
+        }
+        System.out.println("Two books init finished");
+    }
+    private void copyFile(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[32768];
+        int read;
+        while((read = in.read(buffer)) != -1){
+            out.write(buffer, 0, read);
+        }
     }
 
     @Override

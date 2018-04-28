@@ -23,6 +23,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -46,13 +49,19 @@ public class reading_book_Activity extends AppCompatActivity {
     private String chapterName;
     private ScrollView scrollView;
 
-    private void loadText(String s) throws IOException {
+    private void loadText(String s) {
 
         //final Resources resource = getApplicationContext().getResources();
         //InputStream in = resource.openRawResource(R.raw.ludingji_4);
-        InputStream is = getAssets().open(s+ "/" + s + "_1.txt");
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        //InputStream is = getAssets().open(s+ "/" + s + "_1.txt");
+        File enduserFiledir = this.getFilesDir();
+        FileInputStream ins = null;
+        try {
+            ins = new FileInputStream(enduserFiledir.getAbsolutePath() +"/"+"books"+"/"+ s + "/"+ s + "_1.txt");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        BufferedReader reader = new BufferedReader(new InputStreamReader(ins));
         StringBuffer sb = new StringBuffer();
 
         try {
@@ -185,11 +194,15 @@ public class reading_book_Activity extends AppCompatActivity {
     };
 
     private void addDrawerItems(String s) throws IOException {
-        InputStream chapterlist = getAssets().open(s+ "/" + s + "_essayfile.txt");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(chapterlist));
+        //InputStream chapterlist = getAssets().open(s+ "/" + s + "_essayfile.txt");
+
+        FileInputStream ins = new FileInputStream(this.getFilesDir().getPath() +"/"+"books"+"/"+ s + "/"+ s + "_essayfile.txt");
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(ins));
         List<String> sb = new ArrayList<String>();
         String line;
         int j = 0;
+        // The J is number of chapters
         while ((line = reader.readLine()) != null) {
             sb.add(line);
             j++;
@@ -247,11 +260,7 @@ public class reading_book_Activity extends AppCompatActivity {
                 System.out.println(e.getMessage());
             }
 
-            try {
-                 loadText(s);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            loadText(s);
             pg.setVisibility(View.INVISIBLE);
         }
     }

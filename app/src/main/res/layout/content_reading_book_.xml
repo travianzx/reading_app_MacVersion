@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:background="#e3e7d5"
                 android:fontFamily="@font/songti"
-                android:text="TextView"
+                android:text="@string/error"
                 android:textSize="25sp" />
 
         <ProgressBar
