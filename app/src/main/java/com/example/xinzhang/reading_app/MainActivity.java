@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button button_mybook;
     Button button_act2;
-    Button button_act3;
+    Button button_setting;
     Button button_help;
 
     TextView topText;
@@ -48,7 +48,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         button_mybook = (Button) findViewById(R.id.button2);
+        button_setting = (Button) findViewById(R.id.button3);
+
         button_mybook.setOnClickListener( clickButton );
+        button_setting.setOnClickListener(settingButton);
         startWeather();
 
         //InputStream in_text = getAssets().open("shujianenchoulu" + "/" + "shujianenchoulu_1.txt");
@@ -84,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("Init readingBookTab table launched");
             }
         }
+
     }
 
 
@@ -94,6 +98,16 @@ public class MainActivity extends AppCompatActivity {
             Intent act2 = new Intent(getApplicationContext(),Mybook_act.class);
             act2.putExtra("url_book",FILEPATH);
             startActivity(act2);
+        }
+
+    };
+
+    private View.OnClickListener settingButton = new View.OnClickListener()
+    {
+        public void onClick(View v)
+        {
+            Intent act3 = new Intent(getApplicationContext(),reading_setting.class);
+            startActivity(act3);
         }
 
     };
