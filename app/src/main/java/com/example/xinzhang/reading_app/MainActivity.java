@@ -3,6 +3,7 @@ package com.example.xinzhang.reading_app;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.database.Cursor;
@@ -41,6 +42,9 @@ public class MainActivity extends AppCompatActivity {
     TextView topText;
 
     DatabaseHandler_single_book db;
+
+    private ResponseReceiver receiver;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +91,14 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("Init readingBookTab table launched");
             }
         }
+
+        IntentFilter filter = new IntentFilter(ResponseReceiver.ACTION_RESP);
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        receiver = new ResponseReceiver();
+        registerReceiver(receiver, filter);
+        Intent msgIntent = new Intent(this, networkTesting.class);
+        msgIntent.putExtra(networkTesting.PARAM_IN_MSG, "theStringfromMainclass");
+        startService(msgIntent);
 
     }
 

@@ -20,12 +20,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".Mybook_act" />
+
         <activity
             android:name=".reading_book_Activity"
             android:label="@string/title_activity_reading_book_"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity android:name=".reading_setting"></activity>
+
+
+        <service android:enabled="true" android:name=".networkTesting" />
+
     </application>
 
 </manifest>
